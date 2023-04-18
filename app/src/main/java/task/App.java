@@ -3,55 +3,15 @@
  */
 package task;
 
-import java.io.File;
-import java.util.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    
-public static List<String> getFieldValues(String fileName) {
-    List<String> fieldValues = new ArrayList<>();
-    
-    try {
-        File inputFile = new File(fileName);
-
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputFile);
-
-        NodeList nList = doc.getElementsByTagName("record");
-
-        for (int i = 0; i < nList.getLength(); i++) {
-            fieldValues.add(nList.item(i).getTextContent());
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    
-    return fieldValues;
-}
-
-
     public static void main(String[] args) {
-        String fileName = "C:/Users/Mukenge/Desktop/CSC2023/Software Development Practices/Prac 2/Task 2/data.xml";
-        List<String> fieldValues = getFieldValues(fileName);
-    
-        if (fieldValues.isEmpty()) {
-            System.out.println("No record values found in file: " + fileName);
-        } else {
-            System.out.println("Field values in file " + fileName + ":");
-            for (String fieldValue : fieldValues) {
-                System.out.println(fieldValue);
-            }
-        }
+        System.out.println(new App().getGreeting());
     }
-    
 }

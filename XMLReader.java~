@@ -1,36 +1,36 @@
-import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import java.io.File;
 
-public class XMLParser {
+public class XMLReader {
 
   public static void main(String[] args) {
 
     try {
       File inputFile = new File("input.xml");
-
-      // Create a new DocumentBuilderFactory instance
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-
-      // Create a new DocumentBuilder instance
       DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
-      // Parse the XML file and create a new Document object
       Document doc = dBuilder.parse(inputFile);
-
-      // Normalize the Document object
       doc.getDocumentElement().normalize();
 
-      // Get the field values from the Document object
-      NodeList nList = doc.getElementsByTagName("field");
+      NodeList nList = doc.getElementsByTagName("person");
 
       for (int i = 0; i < nList.getLength(); i++) {
         Node nNode = nList.item(i);
+
         if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-          System.out.println(nNode.getTextContent());
+          Element eElement = (Element) nNode;
+          String firstName = eElement.getElementsByTagName("firstName").item(0).getTextContent();
+          String lastName = eElement.getElementsByTagName("lastName").item(0).getTextContent();
+          int age = Integer.parseInt(eElement.getElementsByTagName("age").item(0).getTextContent());
+
+          System.out.println("First Name: " + firstName);
+          System.out.println("Last Name: " + lastName);
+          System.out.println("Age: " + age);
         }
       }
     } catch (Exception e) {
