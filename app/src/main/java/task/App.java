@@ -3,72 +3,84 @@
  */
 package task;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.io.File;
-import java.util.Scanner;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-
         try {
-          File inputFile = new File("C:/Users/Mukenge/Desktop/CSC2023/Software Development Practices/Prac 2/Task 2/data.xml");
-          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-          Document doc = dBuilder.parse(inputFile);
-          doc.getDocumentElement().normalize();
-    
-          NodeList nList = doc.getElementsByTagName("record");
-    
-          Scanner scanner = new Scanner(System.in);
-          System.out.print("Enter comma-separated field names to print (name,postalZip,region): ");
-          String input = scanner.nextLine();
-          String[] fields = input.split(",");
-    
-          for (int i = 0; i < nList.getLength(); i++) {
-            Node nNode = nList.item(i);
-    
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-              Element eElement = (Element) nNode;
-              JSONObject json = new JSONObject();
-    
-              for (String field : fields) {
-                if (field.equals("name")) {
-                    json.put("Name: " , eElement.getElementsByTagName("name").item(0).getTextContent());
-                } else if (field.equals("postalZip")) {
-                    json.put("PostalZip: " , eElement.getElementsByTagName("postalZip").item(0).getTextContent());
-                } else if (field.equals("region")) {
-                    json.put("Region: " , eElement.getElementsByTagName("region").item(0).getTextContent());
-                  
-                } else if (field.equals("country")) {
-                    json.put("Country: " , eElement.getElementsByTagName("country").item(0).getTextContent());  
-                } else if (field.equals("address")) {
-                    json.put("Address: " , eElement.getElementsByTagName("address").item(0).getTextContent());
-                } else if (field.equals("list")) {
-                    json.put("List: " , eElement.getElementsByTagName("list").item(0).getTextContent());
-                  
-                } else {
-                  System.out.println("Invalid field name: " + field);
+            File inputFile = new File("C:/Users/Mukenge/Desktop/CSC2023/Software Development Practices/Prac 2/Task 2/data.xml");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFile);
+            doc.getDocumentElement().normalize();
+            NodeList nList = doc.getElementsByTagName("record");
+
+            Scanner scanner = new Scanner(System.in);
+            ArrayList<String> validFields = new ArrayList<String>();
+            validFields.add("name");
+            validFields.add("PostalZip");
+            validFields.add("Region");
+            validFields.add("country");
+            validFields.add("address");
+            validFields.add("list");
+
+            ArrayList<String> fieldsToOutput = new ArrayList<String>();
+            while (fieldsToOutput.size() == 0) {
+                System.out.print("Enter comma-separated fields to output (name, postalZip, region, country, address, list  : ");
+                String input = scanner.nextLine();
+                String[] fields = input.split(",");
+                for (String field : fields) {
+                    if (validFields.contains(field)) {
+                        fieldsToOutput.add(field);
+                    } else {
+                        System.out.println("Invalid field: " + field);
+                    }
                 }
-              }
-              System.out.println(json.toString());
             }
-          }
+
+            JSONArray jsonArray = new JSONArray();
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    JSONObject obj = new JSONObject();
+                    for (String field : fieldsToOutput) {
+                        if (field.equals("name")) {
+                                obj.put("Name: " , eElement.getElementsByTagName("name").item(0).getTextContent());
+                            } else if (field.equals("postalZip")) {
+                                obj.put("PostalZip: " , eElement.getElementsByTagName("postalZip").item(0).getTextContent());
+                            } else if (field.equals("region")) {
+                                obj.put("Region: " , eElement.getElementsByTagName("region").item(0).getTextContent());
+                            
+                            } else if (field.equals("country")) {
+                                obj.put("Country: " , eElement.getElementsByTagName("country").item(0).getTextContent());  
+                            } else if (field.equals("address")) {
+                                obj.put("Address: " , eElement.getElementsByTagName("address").item(0).getTextContent());
+                            } else if (field.equals("list")) {
+                                obj.put("List: " , eElement.getElementsByTagName("list").item(0).getTextContent());
+                            
+                            }
+                    }
+                    jsonArray.put(obj);
+                }
+            }
+            System.out.println(jsonArray.toString());
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
-      }
+    }
 }
     
     
