@@ -1,77 +1,85 @@
-import java.io.File;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class XMLReader {
+
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the XML file path: ");
+        String xmlFilePath = scanner.nextLine();
+
+        System.out.print("Enter the comma-separated list of field names to output: ");
+        String fieldNamesString = scanner.nextLine();
+        String[] fieldNames = fieldNamesString.split(",");
+
+        SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
-            File inputFile = new File("input.xml");
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputFile);
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("record");
-
-            Scanner scanner = new Scanner(System.in);
-            ArrayList<String> validFields = new ArrayList<String>();
-            validFields.add("name");
-            validFields.add("PostalZip");
-            validFields.add("Region");
-            validFields.add("country");
-            validFields.add("address");
-            validFields.add("list");
-
-            ArrayList<String> fieldsToOutput = new ArrayList<String>();
-            while (fieldsToOutput.size() == 0) {
-                System.out.print("Enter comma-separated fields to output (name, postalZip, region, country, address, list  : ");
-                String input = scanner.nextLine();
-                String[] fields = input.split(",");
-                for (String field : fields) {
-                    if (validFields.contains(field)) {
-                        fieldsToOutput.add(field);
-                    } else {
-                        System.out.println("Invalid field: " + field);
-                    }
-                }
-            }
-
-            JSONArray jsonArray = new JSONArray();
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    JSONObject obj = new JSONObject();
-                    for (String field : fieldsToOutput) {
-                        if (field.equals("name")) {
-                                obj.put("Name: " , eElement.getElementsByTagName("name").item(0).getTextContent());
-                            } else if (field.equals("postalZip")) {
-                                obj.put("PostalZip: " , eElement.getElementsByTagName("postalZip").item(0).getTextContent());
-                            } else if (field.equals("region")) {
-                                obj.put("Region: " , eElement.getElementsByTagName("region").item(0).getTextContent());
-                            
-                            } else if (field.equals("country")) {
-                                obj.put("Country: " , eElement.getElementsByTagName("country").item(0).getTextContent());  
-                            } else if (field.equals("address")) {
-                                obj.put("Address: " , eElement.getElementsByTagName("address").item(0).getTextContent());
-                            } else if (field.equals("list")) {
-                                obj.put("List: " , eElement.getElementsByTagName("list").item(0).getTextContent());
-                            
-                            }
-                    }
-                    jsonArray.put(obj);
-                }
-            }
-            System.out.println(jsonArray.toString());
+            SAXParser saxParser = factory.newSAXParser();
+            XMLHandler handler = new XMLHandler(fieldNames);
+            saxParser.parse(xmlFilePath, handler);
+            String jsonOutput = handler.getJsonOutput();
+            System.out.println(jsonOutput);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    static class XMLHandler extends DefaultHandler {
+        private ArrayList<String> fieldNames;
+        private JSONObject currentObject;
+        private JSONArray jsonArray;
+        private String currentValue;
+        private boolean isValue = false;
+
+        public XMLHandler(String[] fieldNames) {
+            this.fieldNames = new ArrayList<>();
+            for (String fieldName : fieldNames) {
+                this.fieldNames.add(fieldName.trim());
+            }
+            jsonArray = new JSONArray();
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+            currentObject = new JSONObject();
+            isValue = true;
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (fieldNames.contains(qName)) {
+                try {
+                    currentObject.put(qName, currentValue);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (qName.equals("record")) {
+                jsonArray.put(currentObject);
+            }
+            isValue = false;
+            currentValue = null;
+        }
+
+        @Override
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            if (isValue) {
+                currentValue = new String(ch, start, length);
+            }
+        }
+
+        public String getJsonOutput() {
+            return jsonArray.toString();
         }
     }
 }
