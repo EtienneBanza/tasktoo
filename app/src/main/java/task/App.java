@@ -41,27 +41,28 @@ public class App {
     
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
               Element eElement = (Element) nNode;
+              JSONObject json = new JSONObject();
     
               for (String field : fields) {
                 if (field.equals("name")) {
-                  System.out.println("Name: " + eElement.getElementsByTagName("name").item(0).getTextContent());
+                    json.put("Name: " , eElement.getElementsByTagName("name").item(0).getTextContent());
                 } else if (field.equals("postalZip")) {
-                  System.out.println("PostalZip: " + eElement.getElementsByTagName("postalZip").item(0).getTextContent());
+                    json.put("PostalZip: " , eElement.getElementsByTagName("postalZip").item(0).getTextContent());
                 } else if (field.equals("region")) {
-                  System.out.println("Region: " + eElement.getElementsByTagName("region").item(0).getTextContent());
+                    json.put("Region: " , eElement.getElementsByTagName("region").item(0).getTextContent());
                   
                 } else if (field.equals("country")) {
-                  System.out.println("Country: " + eElement.getElementsByTagName("country").item(0).getTextContent());  
+                    json.put("Country: " , eElement.getElementsByTagName("country").item(0).getTextContent());  
                 } else if (field.equals("address")) {
-                  System.out.println("Address: " + eElement.getElementsByTagName("address").item(0).getTextContent());
+                    json.put("Address: " , eElement.getElementsByTagName("address").item(0).getTextContent());
                 } else if (field.equals("list")) {
-                  System.out.println("List: " + eElement.getElementsByTagName("list").item(0).getTextContent());
+                    json.put("List: " , eElement.getElementsByTagName("list").item(0).getTextContent());
                   
                 } else {
                   System.out.println("Invalid field name: " + field);
                 }
               }
-              System.out.println();
+              System.out.println(json.toString());
             }
           }
         } catch (Exception e) {
