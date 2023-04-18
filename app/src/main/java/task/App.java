@@ -27,7 +27,7 @@ public static List<String> getFieldValues(String fileName) {
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(inputFile);
 
-        NodeList nList = doc.getElementsByTagName("field");
+        NodeList nList = doc.getElementsByTagName("record");
 
         for (int i = 0; i < nList.getLength(); i++) {
             fieldValues.add(nList.item(i).getTextContent());
@@ -39,10 +39,19 @@ public static List<String> getFieldValues(String fileName) {
     return fieldValues;
 }
 
+
     public static void main(String[] args) {
-
-        getFieldValues("/data.xml");
-
-        //System.out.println(new App().getGreeting());
+        String fileName = "C:/Users/Mukenge/Desktop/CSC2023/Software Development Practices/Prac 2/Task 2/data.xml";
+        List<String> fieldValues = getFieldValues(fileName);
+    
+        if (fieldValues.isEmpty()) {
+            System.out.println("No record values found in file: " + fileName);
+        } else {
+            System.out.println("Field values in file " + fileName + ":");
+            for (String fieldValue : fieldValues) {
+                System.out.println(fieldValue);
+            }
+        }
     }
+    
 }
