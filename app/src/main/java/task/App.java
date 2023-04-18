@@ -10,6 +10,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import java.io.File;
+import java.util.Scanner;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,18 +31,37 @@ public class App {
     
           NodeList nList = doc.getElementsByTagName("record");
     
+          Scanner scanner = new Scanner(System.in);
+          System.out.print("Enter comma-separated field names to print (name,postalZip,region): ");
+          String input = scanner.nextLine();
+          String[] fields = input.split(",");
+    
           for (int i = 0; i < nList.getLength(); i++) {
             Node nNode = nList.item(i);
     
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
               Element eElement = (Element) nNode;
-              String firstName = eElement.getElementsByTagName("name").item(0).getTextContent();
-              String lastName = eElement.getElementsByTagName("postalZip").item(0).getTextContent();
-              String age = eElement.getElementsByTagName("region").item(0).getTextContent();
     
-              System.out.println("First Name: " + firstName);
-              System.out.println("PostalZip: " + lastName);
-              System.out.println("Region: " + age);
+              for (String field : fields) {
+                if (field.equals("name")) {
+                  System.out.println("Name: " + eElement.getElementsByTagName("name").item(0).getTextContent());
+                } else if (field.equals("postalZip")) {
+                  System.out.println("PostalZip: " + eElement.getElementsByTagName("postalZip").item(0).getTextContent());
+                } else if (field.equals("region")) {
+                  System.out.println("Region: " + eElement.getElementsByTagName("region").item(0).getTextContent());
+                  
+                } else if (field.equals("country")) {
+                  System.out.println("Country: " + eElement.getElementsByTagName("country").item(0).getTextContent());  
+                } else if (field.equals("address")) {
+                  System.out.println("Address: " + eElement.getElementsByTagName("address").item(0).getTextContent());
+                } else if (field.equals("list")) {
+                  System.out.println("List: " + eElement.getElementsByTagName("list").item(0).getTextContent());
+                  
+                } else {
+                  System.out.println("Invalid field name: " + field);
+                }
+              }
+              System.out.println();
             }
           }
         } catch (Exception e) {
@@ -48,5 +69,6 @@ public class App {
         }
       }
 }
+    
     
 
