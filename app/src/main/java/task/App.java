@@ -40,6 +40,9 @@ public static List<String> getFieldValues(String fileName) {
 }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+
+        getFieldValues("/data.xml");
+
+        //System.out.println(new App().getGreeting());
     }
 }
