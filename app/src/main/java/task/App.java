@@ -3,6 +3,13 @@
  */
 package task;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import java.io.File;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +19,34 @@ public class App {
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+
+        try {
+          File inputFile = new File("C:/Users/Mukenge/Desktop/CSC2023/Software Development Practices/Prac 2/Task 2/data.xml");
+          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+          DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+          Document doc = dBuilder.parse(inputFile);
+          doc.getDocumentElement().normalize();
+    
+          NodeList nList = doc.getElementsByTagName("record");
+    
+          for (int i = 0; i < nList.getLength(); i++) {
+            Node nNode = nList.item(i);
+    
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+              Element eElement = (Element) nNode;
+              String firstName = eElement.getElementsByTagName("name").item(0).getTextContent();
+              String lastName = eElement.getElementsByTagName("postalZip").item(0).getTextContent();
+              String age = eElement.getElementsByTagName("region").item(0).getTextContent();
+    
+              System.out.println("First Name: " + firstName);
+              System.out.println("PostalZip: " + lastName);
+              System.out.println("Region: " + age);
+            }
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
 }
+    
+
